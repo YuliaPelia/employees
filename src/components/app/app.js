@@ -45,7 +45,7 @@ class App extends Component {
         })
     }
 
-    onToggleIncrease = (id) => {
+    onToggleProp = (id, prop) => {
 
         // 1 варіант
         // this.setState(({data}) => {
@@ -65,21 +65,20 @@ class App extends Component {
             data: data.map(item => {
                 // якщо ми знаходимо потрібний обєкт ми повертаємо новий обєкт
                 if(item.id === id) {
-                    return {...item, increase: !item.increase}
+                    return {...item, [prop]: !item[prop]}
                 } 
                 return item;
             })
         }))
     }
 
-    onToggleRice = (id) => {
-        console.log(`Rice this ${id}`)
-    }
 
     render() {
+        const employees = this.state.data.length;
+        const increased = this.state.data.filter(item => item.increase).length;
         return (
             <div className='app'>
-                <AppInfo></AppInfo>
+                <AppInfo employees={employees} increased = {increased}></AppInfo>
     
                 <div className="search-panel">
                     <SearchPanel></SearchPanel>
@@ -89,8 +88,7 @@ class App extends Component {
                 <EmployersList 
                 data={this.state.data} 
                 onDelete={this.deleteItem}
-                onToggleIncrease={this.onToggleIncrease}
-                onToggleRice={this.onToggleRice}></EmployersList>
+                onToggleProp={this.onToggleProp}></EmployersList>
                 <EmployeesAddForm onAdd={this.addHuman}></EmployeesAddForm>
             </div>
     
