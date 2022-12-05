@@ -15,7 +15,10 @@ class App extends Component {
                 {name: 'John C.', salary: 800, increase: false, like: true, id: 1},
                 {name: 'Alex M.', salary: 3000, increase: true, like: false, id: 2},
                 {name: 'Carl W.', salary: 5000, increase: false, like: false, id: 3}
-            ]
+            ],
+            // рядок для пошуку
+            term: '',
+            filter: 'all'
         }
         this.maxId = 4;
     }
@@ -72,21 +75,56 @@ class App extends Component {
         }))
     }
 
+    // 1 аргумент - рядок по якому ми будемо здійснювати пошук працівника
+    // 2 аргумент - масив даних який ми будемо фільтрувати
+    searchEmp = (items, term) => {
+        if (term.length === 0) {
+            return items;
+        }
+
+        return items.filter(item => {
+            return item.name.indexOf(term) > -1
+        })
+    }
+    // indexOf - шукає кусочки певних рядків
+
+
+    onUpdateSearch = (term) => {
+        this.setState({term});
+    } 
+
+    onUpdateFilter = (items, filter) => {
+        switch(filter) {
+            case 'like': 
+                return items.filter(item => item.like);
+            case 'moreThen100':
+                return items.filter(item => item.salary > 1000)
+            default:
+                return items
+        }
+    }
+
+    clickBtnFilter = (filter) => {
+        this.setState({filter});
+    }
 
     render() {
+        const {data, term, filter} = this.state;
         const employees = this.state.data.length;
         const increased = this.state.data.filter(item => item.increase).length;
+        const visibleData = this.onUpdateFilter(this.searchEmp(data, term), filter);
+
         return (
             <div className='app'>
                 <AppInfo employees={employees} increased = {increased}></AppInfo>
     
                 <div className="search-panel">
-                    <SearchPanel></SearchPanel>
-                    <AppFilter></AppFilter>
+                    <SearchPanel onUpdateSearch={this.onUpdateSearch}></SearchPanel>
+                    <AppFilter filter={filter} clickBtnFilterSelect={this.clickBtnFilter}></AppFilter>
                 </div>
     
                 <EmployersList 
-                data={this.state.data} 
+                data={visibleData} 
                 onDelete={this.deleteItem}
                 onToggleProp={this.onToggleProp}></EmployersList>
                 <EmployeesAddForm onAdd={this.addHuman}></EmployeesAddForm>
